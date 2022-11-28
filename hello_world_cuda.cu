@@ -15,6 +15,12 @@ void mulmat(int *in1,int *in2 ,int a ,int *out ){
     }
 }
 
+void MatrixInit(float *M, int n, int p){
+	for(int i =0; i<n*p; i++){
+		M[i] = rand()/RAND_MAX;
+	}
+}
+
 int main(){
     helloworld_cuda<<<1,1>>>();
     int a=3;
