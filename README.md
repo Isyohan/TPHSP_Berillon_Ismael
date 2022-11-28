@@ -1,3 +1,2 @@
-Hardware for Signal Prossesing TP
-\newline
+Hardware for Signal Prossesing TP \n
 Théo BERILLON & Yohan ISMAEL
