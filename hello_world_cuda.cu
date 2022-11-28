@@ -97,6 +97,7 @@ __global__ void cudaMatrixAdd(float *M1, float *M2, float *Mout, int n, int p){
 int main(){
     
     srand( time(NULL) );
+
 /*    int a=3;
     int in1[a*a];
     int in2[a*a];
@@ -127,14 +128,16 @@ int main(){
     MatrixInit(M1, n, n);
     MatrixInit(M2, n, n);
 
-    //MatrixMul(M1,M2,n,Mout);
-    
-    
+    MatrixMul(M1,M2,n,Mout);
+
+    /*
     cudaMemcpy(M1gpu,M1,sizeof(float)*n*n,cudaMemcpyHostToDevice);
     cudaMemcpy(M2gpu,M2,sizeof(float)*n*n,cudaMemcpyHostToDevice);
 
     cudaMatrixMul<<<n,n>>>(M1gpu,M2gpu,Moutgpu,n);
+
     cudaMemcpy(Mout,Moutgpu,sizeof(float)*n*n,cudaMemcpyDeviceToHost);
+    */
     
 
     //MatrixPrint(M1, n, n);
