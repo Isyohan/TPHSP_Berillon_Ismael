@@ -110,7 +110,7 @@ int main(){
     for (int i=0;i<a*a;i++){
         printf("%d\n",out[i]);
     }*/
-    int n = 1'000'000'000; // lignes
+    int n = 2'000; // lignes
  //   int p = 2; // colonnes
 
     float* M1 = (float*) malloc(sizeof(float)*n*n);
@@ -126,19 +126,22 @@ int main(){
 
     MatrixInit(M1, n, n);
     MatrixInit(M2, n, n);
+
+    //MatrixMul(M1,M2,n,Mout);
+    
+    
     cudaMemcpy(M1gpu,M1,sizeof(float)*n*n,cudaMemcpyHostToDevice);
     cudaMemcpy(M2gpu,M2,sizeof(float)*n*n,cudaMemcpyHostToDevice);
 
     cudaMatrixMul<<<n,n>>>(M1gpu,M2gpu,Moutgpu,n);
-    //MatrixMul(M1,M2,n,Mout);
-
     cudaMemcpy(Mout,Moutgpu,sizeof(float)*n*n,cudaMemcpyDeviceToHost);
+    
 
     //MatrixPrint(M1, n, n);
     //MatrixPrint(M2, n, n);
     //MatrixPrint(Mout, n, n);
     cudaDeviceSynchronize();
-    printf("%d\n",n);
+    printf("n = %d\n",n);
     return 0;
 }
 
