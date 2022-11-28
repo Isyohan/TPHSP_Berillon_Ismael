@@ -17,7 +17,7 @@ void mulmat(int *in1,int *in2 ,int a ,int *out ){
 
 int main(){
     helloworld_cuda<<<1,1>>>();
-    int a=4;
+    int a=3;
     int in1[a*a];
     int in2[a*a];
     int out[a*a];
@@ -25,13 +25,14 @@ int main(){
         in1[i]=i;
         in2[i]=i;
     }
-
+    
     mulmat(in1,in2,a,out);
     for (int i=0;i<a*a;i++){
         printf("%d\n",out[i]);
     }
 
     cudaDeviceSynchronize();
+    printf("cuda\n");
     return 0;
 }
 
