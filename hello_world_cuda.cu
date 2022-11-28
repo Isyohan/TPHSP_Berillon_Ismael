@@ -6,7 +6,7 @@ __global__ void helloworld_cuda(){
     printf("Hello\n");
 }
 
-void MatrixMul(int *in1,int *in2 ,int a ,int *out ){
+void MatrixMul(float *in1,float *in2 ,int a ,float *out ){
     /*
     Matrice carrée d'ordre a
     On stocke la matrice dans une liste de dimension 1 et de taille n*p:
@@ -95,7 +95,7 @@ __global__ void cudaMatrixAdd(float *M1, float *M2, float *Mout, int n, int p){
 
 
 int main(){
-    helloworld_cuda<<<1,1>>>();
+    
     srand( time(NULL) );
 /*    int a=3;
     int in1[a*a];
@@ -110,7 +110,7 @@ int main(){
     for (int i=0;i<a*a;i++){
         printf("%d\n",out[i]);
     }*/
-    int n = 2; // lignes
+    int n = 1'000'000'000; // lignes
  //   int p = 2; // colonnes
 
     float* M1 = (float*) malloc(sizeof(float)*n*n);
@@ -128,18 +128,17 @@ int main(){
     MatrixInit(M2, n, n);
     cudaMemcpy(M1gpu,M1,sizeof(float)*n*n,cudaMemcpyHostToDevice);
     cudaMemcpy(M2gpu,M2,sizeof(float)*n*n,cudaMemcpyHostToDevice);
-//    cudaMemcpy(Moutgpu,Mout,n*p,cudaMemcpyHostToDevice);
-    cudaMatrixMul<<<n,n>>>(M1gpu,M2gpu,Moutgpu,n);
 
- //   cudaMemcpy(M1,M1gpu,n*p,cudaMemcpyDeviceToHost);
- //   cudaMemcpy(M2,M2gpu,n*p,cudaMemcpyDeviceToHost);
+    cudaMatrixMul<<<n,n>>>(M1gpu,M2gpu,Moutgpu,n);
+    //MatrixMul(M1,M2,n,Mout);
+
     cudaMemcpy(Mout,Moutgpu,sizeof(float)*n*n,cudaMemcpyDeviceToHost);
 
-    MatrixPrint(M1, n, n);
-    MatrixPrint(M2, n, n);
-    MatrixPrint(Mout, n, n);
+    //MatrixPrint(M1, n, n);
+    //MatrixPrint(M2, n, n);
+    //MatrixPrint(Mout, n, n);
     cudaDeviceSynchronize();
-    printf("cuda\n");
+    printf("%d\n",n);
     return 0;
 }
 
