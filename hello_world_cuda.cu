@@ -128,16 +128,16 @@ int main(){
     MatrixInit(M1, n, n);
     MatrixInit(M2, n, n);
 
-    MatrixMul(M1,M2,n,Mout);
+    //MatrixMul(M1,M2,n,Mout);
 
-    /*
+    
     cudaMemcpy(M1gpu,M1,sizeof(float)*n*n,cudaMemcpyHostToDevice);
     cudaMemcpy(M2gpu,M2,sizeof(float)*n*n,cudaMemcpyHostToDevice);
 
     cudaMatrixMul<<<n,n>>>(M1gpu,M2gpu,Moutgpu,n);
 
     cudaMemcpy(Mout,Moutgpu,sizeof(float)*n*n,cudaMemcpyDeviceToHost);
-    */
+    
     
 
     //MatrixPrint(M1, n, n);
