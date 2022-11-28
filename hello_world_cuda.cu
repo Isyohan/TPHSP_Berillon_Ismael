@@ -6,7 +6,7 @@ __global__ void helloworld_cuda(){
     printf("Hello\n");
 }
 
-void mulmat(int *in1,int *in2 ,int a ,int *out ){
+void MatrixMul(int *in1,int *in2 ,int a ,int *out ){
     for (int i=0;i<a*a;i++){
         int s=0;
         for (int j=0;j<a;j++){
@@ -38,7 +38,7 @@ void MatrixPrint(float *M, int n, int p){
     */
     for (int i=0;i<n;i++){
         for(int j=0;j<p;j++){
-            printf("%f\t",M[i*p+j]);
+            printf("%1.2f\t",M[i*p+j]);
         }
         printf("\n");
     }
@@ -50,6 +50,17 @@ void MatrixAdd(float *M1, float *M2, float *Mout, int n, int p){
         Mout[i] = M1[i] + M2[i];
     }
 }
+
+__global__ void cudaMatrixAdd(float *M1, float *M2, float *Mout, int n, int p){
+    int i = blockIdx.x;
+    int j = threadIdx.x;
+//    printf("%d \t %d \n", i, j);
+
+//    if(i*p+j>=n*p){printf("error");}
+    Mout[i*p+j] = M1[i*p+j] + M2[i*p+j];
+//    printf("%1.2f \n", Mout[i*p+j]);
+}
+
 
 int main(){
     helloworld_cuda<<<1,1>>>();
@@ -63,19 +74,35 @@ int main(){
         in2[i]=i;
     }
     
-    mulmat(in1,in2,a,out);
+    MatrixMul(in1,in2,a,out);
     for (int i=0;i<a*a;i++){
         printf("%d\n",out[i]);
     }*/
     int n = 3; // lignes
     int p = 2; // colonnes
+
     float* M1 = (float*) malloc(sizeof(float)*n*p);
     float* M2 = (float*) malloc(sizeof(float)*n*p);
     float* Mout = (float*) malloc(sizeof(float)*n*p);
 
+    float* M1gpu;
+    float* M2gpu;
+    float* Moutgpu;
+    (float*) cudaMalloc((void **) &M1gpu, sizeof(float)*n*p);
+    (float*) cudaMalloc((void **) &M2gpu, sizeof(float)*n*p);
+    (float*) cudaMalloc((void **) &Moutgpu, sizeof(float)*n*p);
+
     MatrixInit(M1, n, p);
     MatrixInit(M2, n, p);
-    MatrixAdd(M1,M2,Mout,n,p);
+    cudaMemcpy(M1gpu,M1,sizeof(float)*n*p,cudaMemcpyHostToDevice);
+    cudaMemcpy(M2gpu,M2,sizeof(float)*n*p,cudaMemcpyHostToDevice);
+//    cudaMemcpy(Moutgpu,Mout,n*p,cudaMemcpyHostToDevice);
+    cudaMatrixAdd<<<n,p>>>(M1gpu,M2gpu,Moutgpu,n,p);
+
+ //   cudaMemcpy(M1,M1gpu,n*p,cudaMemcpyDeviceToHost);
+ //   cudaMemcpy(M2,M2gpu,n*p,cudaMemcpyDeviceToHost);
+    cudaMemcpy(Mout,Moutgpu,sizeof(float)*n*p,cudaMemcpyDeviceToHost);
+
     MatrixPrint(M1, n, p);
     MatrixPrint(M2, n, p);
     MatrixPrint(Mout, n, p);
