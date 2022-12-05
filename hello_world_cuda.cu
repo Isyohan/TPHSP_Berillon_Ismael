@@ -89,6 +89,32 @@ void MatrixAdd(float *M1, float *M2, float *Mout, int n, int p){
     }
 }
 
+__device__ float MatrixMulTermToTerm(float *M1, float *M2, int n){ // Pour faire la convolution
+    float sum = 0;
+    for(int i = 0; i<n*n;i++){
+        sum += M1[i]*M2[i];
+    }
+    return sum;
+}
+
+__device__ void SubMatrix(float *M1, float *Mout, int n, int i, int j){ // Récupérer la matrice de taille 5*5 à partir de l'indice (i,j)
+    int N = 32;
+    for(int k = 0; k<n; k++){
+        for(int l = 0; l < n; l++){
+            Mout[l+k*n] = M1[l+j+(k+i)*N];
+        }
+    }
+}
+
+__global__ void cudaConvolutionMatrix(float *M1, float *M2, float *Mout, int n, int k){ // Réalisation de la convolution
+    int i = blockIdx.x;
+    int j = threadIdx.x;
+    float* M = (float*) malloc(sizeof(float)*k*k);
+
+    SubMatrix(M1, M, k, i, j);
+    Mout[i*n+j] = MatrixMulTermToTerm(M2,M,k);
+}
+
 __global__ void cudaMatrixAdd(float *M1, float *M2, float *Mout, int n, int p){
     int i = blockIdx.x;
     int j = threadIdx.x;
