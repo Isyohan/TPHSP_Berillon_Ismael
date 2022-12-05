@@ -4,6 +4,10 @@
 #include <time.h>
 
 int main(){
+
+    srand( time(NULL) );
+
+
     int nin = 32; // dimensions matrice d'entrée
     int nout1 = 28; // dimensions matrice de sortie de la première couche convolutive
     int cout1 = 6; // Nombre de canaux de sortie de la première couche convolutive
@@ -43,7 +47,7 @@ int main(){
     cudaMemcpy(C1_kernel_gpu,C1_kernel,sizeof(float)*nkernel*nkernel*cout1,cudaMemcpyHostToDevice);
     cudaMemcpy(Mout_gpu,Mout,sizeof(float)*nout1*nout1,cudaMemcpyHostToDevice);
 
-    cudaConvolutionMatrix<<<nout1,nout1>>>(raw_data_gpu, C1_kernel_gpu, Mout_gpu, nout1, nkernel); // Convolution
+    cudaConvolutionMatrix<<<nout1,nout1>>>(raw_data_gpu, C1_kernel_gpu, Mout_gpu, nout1, nkernel, cout1); // Convolution
 
     cudaMemcpy(Mout,Mout_gpu,sizeof(float)*nout1*nout1,cudaMemcpyDeviceToHost); // Envoi de la matrice vers le cpu 
 

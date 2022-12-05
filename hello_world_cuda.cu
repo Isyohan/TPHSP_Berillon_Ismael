@@ -106,13 +106,25 @@ __device__ void SubMatrix(float *M1, float *Mout, int n, int i, int j){ // Récu
     }
 }
 
-__global__ void cudaConvolutionMatrix(float *M1, float *M2, float *Mout, int n, int k){ // Réalisation de la convolution
+__device__ void ChooseChannel(float *M1, float *Mout, int n, int c){
+    for(int i=0; i<n*n; i++){
+        Mout[i] = M1[i+c*n*n];
+    }
+
+}
+
+__global__ void cudaConvolutionMatrix(float *M1, float *M2, float *Mout, int n, int k, int c){ // Réalisation de la convolution
     int i = blockIdx.x;
     int j = threadIdx.x;
     float* M = (float*) malloc(sizeof(float)*k*k);
+    float* F = (float*) malloc(sizeof(float)*k*k);
 
     SubMatrix(M1, M, k, i, j);
-    Mout[i*n+j] = MatrixMulTermToTerm(M2,M,k);
+    for(int ch = 0; ch < c; ch++){ // Pour chaque canal
+        ChooseChannel(M2, F, k, ch);
+        Mout[i*n+j+ch*n*n] = MatrixMulTermToTerm(F,M,k); // Convolution pour chaque canal
+    }
+
 }
 
 __global__ void cudaMatrixAdd(float *M1, float *M2, float *Mout, int n, int p){
