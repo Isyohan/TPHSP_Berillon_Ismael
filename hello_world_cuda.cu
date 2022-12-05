@@ -55,6 +55,12 @@ void MatrixInit(float *M, int n, int p){
 	} // [rand - (RAND_MAX/2)]/ (RAND_MAX/2) pour avoir un nombre aléatoire entre -1 et 1
 }
 
+void MatrixInitChannel(float *M, int n, int p, int c){
+	for(int i =0; i<n*p*c; i++){
+		M[i] = (float)2*((float)rand()-((float)RAND_MAX)/2)/(float)RAND_MAX;
+	} // [rand - (RAND_MAX/2)]/ (RAND_MAX/2) pour avoir un nombre aléatoire entre -1 et 1
+}
+
 void MatrixPrint(float *M, int n, int p){
     /* On stocke la matrice dans une liste de dimension 1 et de taille n*p:
 
@@ -94,7 +100,7 @@ __global__ void cudaMatrixAdd(float *M1, float *M2, float *Mout, int n, int p){
 }
 
 
-int main(){
+int mainTP1(){
     
     srand( time(NULL) );
 
