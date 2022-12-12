@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 __global__ void helloworld_cuda(){
     printf("Hello\n");
@@ -97,8 +98,8 @@ __device__ float MatrixMulTermToTerm(float *M1, float *M2, int n){ // Pour faire
     return sum;
 }
 
-__device__ void SubMatrix(float *M1, float *Mout, int n, int i, int j){ // Récupérer la matrice de taille 5*5 à partir de l'indice (i,j)
-    int N = 32;
+__device__ void SubMatrix(float *M1, float *Mout, int n, int i, int j,int N){ // Récupérer la matrice de taille 5*5 à partir de l'indice (i,j)
+
     for(int k = 0; k<n; k++){
         for(int l = 0; l < n; l++){
             Mout[l+k*n] = M1[l+j+(k+i)*N];
@@ -116,15 +117,41 @@ __device__ void ChooseChannel(float *M1, float *Mout, int n, int c){
 __global__ void cudaConvolutionMatrix(float *M1, float *M2, float *Mout, int n, int k, int c){ // Réalisation de la convolution
     int i = blockIdx.x;
     int j = threadIdx.x;
-    float* M = (float*) malloc(sizeof(float)*k*k);
-    float* F = (float*) malloc(sizeof(float)*k*k);
+    float* M = (float*) malloc(sizeof(float)*k*k); // Sous matrice locale pour la convolution
+    float* F = (float*) malloc(sizeof(float)*k*k); // Sous matrice pour chaque canal d'entrée
 
-    SubMatrix(M1, M, k, i, j);
+    SubMatrix(M1, M, k, i, j,n+k-1);
     for(int ch = 0; ch < c; ch++){ // Pour chaque canal
         ChooseChannel(M2, F, k, ch);
         Mout[i*n+j+ch*n*n] = MatrixMulTermToTerm(F,M,k); // Convolution pour chaque canal
     }
 
+}
+
+__device__ float MaxMat(float *F, int red){
+    float max = -1;
+
+    for(int i = 0; i < red*red; i++){
+        if(max<F[i]){
+            max = F[i];
+        }
+    }
+    return max;
+}
+
+__global__ void cudaMaxPooling(float *M1, float *Mout, int red, int nout, int c){
+    int i = blockIdx.x;
+    int j = threadIdx.x;
+    int nin = nout*red;
+    float* F = (float*) malloc(sizeof(float)*red*red); // Sous matrice pour chaque canal dans laquelle on va choisir le maximum
+    float* SubM = (float*) malloc(sizeof(float)*red*red*c); // Sous matrice de taille 2*2*6
+
+    SubMatrix(M1, SubM, red, red*i, red*j, nin); // red désigne le paramètre par lequel on va réduire la matrice, ici red = 2
+
+    for(int ch = 0; ch < c; ch++){
+        ChooseChannel(SubM, F, nin, ch);
+        Mout[i*nout+j+c*nout*nout] =  MaxMat(F,red);// On choisit le maximum de la matrice F 
+    }
 }
 
 __global__ void cudaMatrixAdd(float *M1, float *M2, float *Mout, int n, int p){
