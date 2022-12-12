@@ -8,10 +8,10 @@ int main(){
     srand( time(NULL) );
 
 
-    int nin = 2; // dimensions matrice d'entrée
-    int nout1 = 2; // dimensions matrice de sortie de la première couche convolutive
+    int nin = 4; // dimensions matrice d'entrée
+    int nout1 = 4; // dimensions matrice de sortie de la première couche convolutive
     int cout1 = 1; // Nombre de canaux de sortie de la première couche convolutive
-    int nmaxpool = 1; // Dimensions de la matrice après max pooling
+    int nmaxpool = 2; // Dimensions de la matrice après max pooling
     int nkernel = 1; //Dimensions du noyau de convolution de la première couche convolutive
 
 // Allocation de la mémoire
@@ -53,8 +53,9 @@ int main(){
     cudaMemcpy(Moutpool_gpu,Moutpool,sizeof(float)*nmaxpool*nmaxpool*cout1,cudaMemcpyHostToDevice);    
 
     cudaConvolutionMatrix<<<nout1,nout1>>>(raw_data_gpu, C1_kernel_gpu, Mout_gpu, nout1, nkernel, cout1); // Convolution
-    cudaMaxPooling<<<nmaxpool,nmaxpool>>>(Mout_gpu, Moutpool_gpu, 2, nmaxpool, cout1);
-
+    cudaMaxPooling<<<nmaxpool,nmaxpool>>>(Mout_gpu, Moutpool_gpu, 2, nmaxpool, cout1); // Maxpooling
+    
+ 
     cudaMemcpy(Mout,Mout_gpu,sizeof(float)*nout1*nout1*cout1,cudaMemcpyDeviceToHost); // Envoi de la matrice vers le cpu 
     cudaMemcpy(Moutpool,Moutpool_gpu,sizeof(float)*nmaxpool*nmaxpool*cout1,cudaMemcpyDeviceToHost);    
 
