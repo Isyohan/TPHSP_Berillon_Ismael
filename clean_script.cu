@@ -68,7 +68,7 @@ int main(){
     MatrixPrintChannel(C1_kernel, nkernel, nkernel,cout1);
     printf("\n");
 
-    printf("Convolutionned : \n");
+    printf("Convolutioned : \n");
     MatrixPrintChannel(Mout, nout1, nout1,cout1); // Affichage du résultat de la convolution
     printf("\n");
 
