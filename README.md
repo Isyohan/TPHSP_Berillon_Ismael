@@ -28,4 +28,4 @@ GPU : 8.227s
 
 accélération pratique -> 21
 
-On pourrait s'attendre à mieux, il y a plusirus améliorations possible dans notre code.
+On pourrait s'attendre à mieux, il y a plusieurs améliorations possible dans notre code.
