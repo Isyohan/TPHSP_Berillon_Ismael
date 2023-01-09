@@ -58,6 +58,7 @@ int main(){
 
     int taille_maxpooling=2;
     int nmaxpool=nout/taille_maxpooling;
+
     float* outmaxpool = (float*) malloc(sizeof(float)*nmaxpool*nmaxpool*ch_kernel);
     float* outmaxpool_gpu;
     (float*) cudaMalloc((void **) &outmaxpool_gpu, sizeof(float)*nmaxpool*nmaxpool*ch_kernel);
@@ -65,16 +66,11 @@ int main(){
     
     MaxPoolingGlobal<<<nmaxpool,nmaxpool>>>(out_gpu,outmaxpool_gpu,nmaxpool,taille_maxpooling,ch_kernel);
 
-    cudaMemcpy(outmaxpool,outmaxpool_gpu,sizeof(float)*nout*nout*ch_kernel,cudaMemcpyDeviceToHost); // Envoi de la matrice vers le cpu 
+    cudaMemcpy(outmaxpool,outmaxpool_gpu,sizeof(float)*nmaxpool*nmaxpool*ch_kernel,cudaMemcpyDeviceToHost); // Envoi de la matrice vers le cpu 
 
     cudaDeviceSynchronize();
 
     printf("out maxpool :\n");
-    MatrixPrintChannel(outmaxpool,nmaxpool,nmaxpool,ch_kernel);
-
-
-    printf("out maxpool :\n");
-    maxpoolNormal(out,outmaxpool,nmaxpool,taille_maxpooling,ch_kernel);
     MatrixPrintChannel(outmaxpool,nmaxpool,nmaxpool,ch_kernel);
 
     return 0;

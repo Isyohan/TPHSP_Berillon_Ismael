@@ -149,8 +149,8 @@ void maxpoolNormal(float* Min, float* Mout, int nout, int taille_maxpooling, int
     float* oneChannelMaxpooling = (float*) malloc(sizeof(float)*taille_maxpooling*taille_maxpooling);
 
 
-    for(int i=0;i<=nout;i+=1){
-        for(int j=0;j<=nout;j+=1){
+    for(int i=0;i<nout;i+=1){
+        for(int j=0;j<nout;j+=1){
             SubMatrixNormal(Min,subM,nout*taille_maxpooling,taille_maxpooling,n_channel,i*taille_maxpooling,j*taille_maxpooling);
 
             for (int ch=0;ch<n_channel;ch++){
@@ -184,7 +184,6 @@ __global__ void MaxPoolingGlobal(float* Min, float* Mout, int nout, int taille_m
 
     int j = blockIdx.x;
     int i = threadIdx.x;
-    printf("(%d,%d)",i,j);
     SubMatrixDevice(Min,subM,nout*taille_maxpooling,taille_maxpooling,n_channel,i*taille_maxpooling,j*taille_maxpooling);
 
     for (int ch=0;ch<n_channel;ch++){
