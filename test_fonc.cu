@@ -144,38 +144,56 @@ float MaxMatNormal(float *F, int red){
     return max;
 }
 
-void maxpool(float* Min, float* Mout, int nout, int taille_maxpooling, int n_channel){
+void maxpoolNormal(float* Min, float* Mout, int nout, int taille_maxpooling, int n_channel){
     float* subM = (float*) malloc(sizeof(float)*taille_maxpooling*taille_maxpooling*n_channel);
     float* oneChannelMaxpooling = (float*) malloc(sizeof(float)*taille_maxpooling*taille_maxpooling);
 
 
-    for(int i=0;i<nout;i+=taille_maxpooling){
-        for(int j=0;j<nout;j+=taille_maxpooling){
-            SubMatrixNormal(Min,subM,nout*taille_maxpooling,taille_maxpooling,n_channel,i,j);
-            
+    for(int i=0;i<=nout;i+=1){
+        for(int j=0;j<=nout;j+=1){
+            SubMatrixNormal(Min,subM,nout*taille_maxpooling,taille_maxpooling,n_channel,i*taille_maxpooling,j*taille_maxpooling);
+
             for (int ch=0;ch<n_channel;ch++){
                 ChooseChannelNormal(subM,oneChannelMaxpooling,taille_maxpooling,ch);
+
+                //printf("(%d,%d,%d)\n",i,j,ch);
+                //MatrixPrintChannel(oneChannelMaxpooling,taille_maxpooling,taille_maxpooling,1);
+
                 Mout[j + i*nout + ch*nout*nout]=MaxMatNormal(oneChannelMaxpooling,taille_maxpooling);
             }
         }
     }
 }
-/*
-void cudaMaxPoolingNormal(float *M1, float *Mout, int red, int nout, int c){
-    int i = blockIdx.x;
-    int j = threadIdx.x;
-    printf("i=%d , j=%d\n",i,j);
-    int nin = nout*red;
-    float* F = (float*) malloc(sizeof(float)*red*red); // Sous matrice pour chaque canal dans laquelle on va choisir le maximum
-    float* SubM = (float*) malloc(sizeof(float)*red*red*c); // Sous matrice de taille 2*2*6
 
-    SubMatrix(M1, SubM, red, red*i, red*j, nin); // red désigne le paramètre par lequel on va réduire la matrice, ici red = 2
 
-    for(int ch = 0; ch < c; ch++){
-        SubMatrixNormal(M1, SubM, red, (red+1)*i, (red+1)*j, ch, nin); // red désigne le paramètre par lequel on va réduire la matrice, ici red = 2
-        ChooseChannel(SubM, F, red, ch);
-        Mout[i*nout+j+c*nout*nout] =  MaxMat(F,red); // On choisit le maximum de la matrice F 
-        Mout[0]=MaxMat(F,red);
+__device__ float MaxMatDevice(float *F, int red){
+    float max = -1.0;
+
+    for(int i = 0; i < red*red; i++){
+        if(max<F[i]){
+            max = F[i];
+        }
     }
+    return max;
 }
-*/
+
+__global__ void MaxPoolingGlobal(float* Min, float* Mout, int nout, int taille_maxpooling, int n_channel){
+    float* subM = (float*) malloc(sizeof(float)*taille_maxpooling*taille_maxpooling*n_channel);
+    float* oneChannelMaxpooling = (float*) malloc(sizeof(float)*taille_maxpooling*taille_maxpooling);
+
+
+    int j = blockIdx.x;
+    int i = threadIdx.x;
+
+    SubMatrixDevice(Min,subM,nout*taille_maxpooling,taille_maxpooling,n_channel,i*taille_maxpooling,j*taille_maxpooling);
+
+    for (int ch=0;ch<n_channel;ch++){
+        ChooseChannel(subM,oneChannelMaxpooling,taille_maxpooling,ch);
+
+                //printf("(%d,%d,%d)\n",i,j,ch);
+                //MatrixPrintChannel(oneChannelMaxpooling,taille_maxpooling,taille_maxpooling,1);
+
+        Mout[j + i*nout + ch*nout*nout]=MaxMatDevice(oneChannelMaxpooling,taille_maxpooling);
+    }
+       
+}
