@@ -184,7 +184,7 @@ __global__ void MaxPoolingGlobal(float* Min, float* Mout, int nout, int taille_m
 
     int j = blockIdx.x;
     int i = threadIdx.x;
-
+    printf("(%d,%d)",i,j);
     SubMatrixDevice(Min,subM,nout*taille_maxpooling,taille_maxpooling,n_channel,i*taille_maxpooling,j*taille_maxpooling);
 
     for (int ch=0;ch<n_channel;ch++){
