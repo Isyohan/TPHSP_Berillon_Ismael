@@ -7,7 +7,7 @@
 int main(){
     srand( time(NULL) );
 
-    int nin=32;
+    int nin=4;
     int nb_channel_in=1;
     float* data = (float*) malloc(sizeof(float)*nin*nin*nb_channel_in);
     float* data_gpu;
@@ -19,8 +19,8 @@ int main(){
 
 
     
-    int nkernel=5;
-    int ch_kernel=6;
+    int nkernel=1;
+    int ch_kernel=2;
     float* kernel = (float*) malloc(sizeof(float)*nkernel*nkernel*ch_kernel);
     float* kernel_gpu;
     (float*) cudaMalloc((void **) &kernel_gpu, sizeof(float)*nkernel*nkernel*ch_kernel);
@@ -55,6 +55,14 @@ int main(){
 
     printf("out:\n");
     MatrixPrintChannel(out,nout,nout,ch_kernel);
+
+    int taille_maxpooling=2;
+    int nmaxpool=nout/taille_maxpooling;
+    float* outmaxpool = (float*) malloc(sizeof(float)*nmaxpool*nmaxpool*ch_kernel);
+
+    maxpool(out,outmaxpool,nmaxpool,taille_maxpooling,ch_kernel);
+    printf("out maxpool :\n");
+    MatrixPrintChannel(outmaxpool,nmaxpool,nmaxpool,ch_kernel);
 
     return 0;
 }
