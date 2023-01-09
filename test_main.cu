@@ -7,7 +7,7 @@
 int main(){
     srand( time(NULL) );
 
-    int nin=4;
+    int nin=32;
     int nb_channel_in=1;
     float* data = (float*) malloc(sizeof(float)*nin*nin*nb_channel_in);
     float* data_gpu;
@@ -19,7 +19,7 @@ int main(){
 
 
     
-    int nkernel=1;
+    int nkernel=5;
     int ch_kernel=2;
     float* kernel = (float*) malloc(sizeof(float)*nkernel*nkernel*ch_kernel);
     float* kernel_gpu;
