@@ -7,7 +7,7 @@
 int main(){
     srand( time(NULL) );
 
-    int nin=32;
+    int nin=20000;
     int nb_channel_in=1;
     float* data = (float*) malloc(sizeof(float)*nin*nin*nb_channel_in);
     float* data_gpu;
@@ -32,11 +32,11 @@ int main(){
 
 
 
-    printf("kernel : \n");
-    MatrixPrintChannel(kernel,nkernel,nkernel,ch_kernel);
+    //printf("kernel : \n");
+    //MatrixPrintChannel(kernel,nkernel,nkernel,ch_kernel);
     
-    printf("data : \n");
-    MatrixPrintChannel(data,nin,nin,nb_channel_in);
+    //printf("data : \n");
+    //MatrixPrintChannel(data,nin,nin,nb_channel_in);
 
 
     int nout=nin-nkernel+1;
@@ -48,13 +48,13 @@ int main(){
 
 
 
-//    ConvNormal(data,kernel,out,nin,nkernel,nb_channel_in,ch_kernel);
+    //ConvNormal(data,kernel,out,nin,nkernel,nb_channel_in,ch_kernel);
     Conv2d<<<nout,nout>>>(data_gpu,kernel_gpu,out_gpu,nin,nkernel,nb_channel_in,ch_kernel);
 
-    cudaMemcpy(out,out_gpu,sizeof(float)*nout*nout*ch_kernel,cudaMemcpyDeviceToHost); // Envoi de la matrice vers le cpu 
+    //cudaMemcpy(out,out_gpu,sizeof(float)*nout*nout*ch_kernel,cudaMemcpyDeviceToHost); // Envoi de la matrice vers le cpu 
 
-    printf("out:\n");
-    MatrixPrintChannel(out,nout,nout,ch_kernel);
+    //printf("out:\n");
+    //MatrixPrintChannel(out,nout,nout,ch_kernel);
 
     int taille_maxpooling=2;
     int nmaxpool=nout/taille_maxpooling;
@@ -66,12 +66,16 @@ int main(){
     
     MaxPoolingGlobal<<<nmaxpool,nmaxpool>>>(out_gpu,outmaxpool_gpu,nmaxpool,taille_maxpooling,ch_kernel);
 
-    cudaMemcpy(outmaxpool,outmaxpool_gpu,sizeof(float)*nmaxpool*nmaxpool*ch_kernel,cudaMemcpyDeviceToHost); // Envoi de la matrice vers le cpu 
+    //cudaMemcpy(outmaxpool,outmaxpool_gpu,sizeof(float)*nmaxpool*nmaxpool*ch_kernel,cudaMemcpyDeviceToHost); // Envoi de la matrice vers le cpu 
 
     cudaDeviceSynchronize();
 
-    printf("out maxpool :\n");
-    MatrixPrintChannel(outmaxpool,nmaxpool,nmaxpool,ch_kernel);
+    //printf("out maxpool :\n");
+    //MatrixPrintChannel(outmaxpool,nmaxpool,nmaxpool,ch_kernel);
+
+    
+    //maxpoolNormal(out,outmaxpool,nmaxpool,taille_maxpooling,ch_kernel);
+    
 
     return 0;
 }
