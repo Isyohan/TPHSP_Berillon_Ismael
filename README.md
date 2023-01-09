@@ -1,7 +1,7 @@
 Hardware for Signal Prossesing TP
 
 Théo BERILLON & Yohan ISMAEL
-TP1
+TP1 :
 On réalise une multiplication de matrices initialisées aléatoirement (float entre -1 et 1) de dimension 500.
 Durée moyenne de calcul avec GPU = 0.205s (sur 5 éxecutions)
 
@@ -18,12 +18,15 @@ On réalise n*n calculs en parallèle.
 
 TP2 :
 
-Convolution sur matrices de petites tailles : 2*2, 3*3, 1*1 avec succès pour des tailles de noyaux différentes (1*1,2*2,3*3)
+Convolution sur matrices de petites tailles : 2x2, 3x3, 1x1 avec succès pour des tailles de noyaux différentes (1x1,2x2,3x3)
 
 
+TP3 : Convolution et maxpooling
+ 
 Conv + Maxpooling avec n = 20 000:
 
 CPU : 2m53.011s= 173.011s
+
 GPU : 8.227s
 
 accélération pratique -> 21
