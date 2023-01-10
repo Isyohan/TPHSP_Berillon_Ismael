@@ -76,58 +76,57 @@ int main(){
 
 
     float* M_dense1_gpu; (float*) cudaMalloc((void **) &M_dense1_gpu, sizeof(float)*nd_2*nd_1);
-    float* V_out1_gpu;
-    float* biais3_gpu;
+    float* V_out1_gpu; (float*) cudaMalloc((void **) &V_out1_gpu, sizeof(float)*nd_2);
+    float* biais3_gpu; (float*) cudaMalloc((void **) &biais3_gpu, sizeof(float)*nd_2);)
 
     float* M_dense2_gpu; (float*) cudaMalloc((void **) &M_dense2_gpu, sizeof(float)*nd_3*nd_2);
-    float* V_out2_gpu;
-    float* biais4_gpu;
+    float* V_out2_gpu; (float*) cudaMalloc((void **) &V_out2_gpu, sizeof(float)*nd_3);
+    float* biais4_gpu; (float*) cudaMalloc((void **) &biais4_gpu, sizeof(float)*nd_3);
 
     float* M_dense3_gpu; (float*) cudaMalloc((void **) &M_dense3_gpu, sizeof(float)*nd_4*nd_3);
-    float* V_out3_gpu;
-    float* biais5_gpu;
-
-    (float*) cudaMalloc((void **) &raw_data_gpu, sizeof(float)*nin*nin);
-    (float*) cudaMalloc((void **) &C1_kernel_gpu, sizeof(float)*nkernel*nkernel*cout1);
-    (float*) cudaMalloc((void **) &Mout_gpu, sizeof(float)*nout1*nout1*cout1);
-    (float*) cudaMalloc((void **) &Moutpool_gpu, sizeof(float)*nmaxpool*nmaxpool*cout1);
-
-    (float*) cudaMalloc((void **) &biais1_gpu, sizeof(float)*cout1);
-    (float*) cudaMalloc((void **) &biais2_gpu, sizeof(float)*cout2);
-    (float*) cudaMalloc((void **) &biais3_gpu, sizeof(float)*nd_2);
-    (float*) cudaMalloc((void **) &biais4_gpu, sizeof(float)*nd_3);
-    (float*) cudaMalloc((void **) &biais5_gpu, sizeof(float)*nd_4);
+    float* V_out3_gpu; (float*) cudaMalloc((void **) &V_out3_gpu, sizeof(float)*nd_4);
+    float* biais5_gpu; (float*) cudaMalloc((void **) &biais5_gpu, sizeof(float)*nd_4);
 
 //Initialisation des matrices
     MatrixInit(raw_data, nin, nin);
 
     MatrixInitChannel(C1_kernel, nkernel, nkernel, cout1);
-    //MatrixInitChannel(Mout, nout1, nout1, cout1);
-    //MatrixInitChannel(Moutpool,nmaxpool,nmaxpool,cout1);
     MatrixInit(biais1, cout1, 1);
 
     MatrixInitChannel(C2_kernel, nkernel, nkernel, cout1*cout2);
     MatrixInit(biais2, cout2, 1);
 
+    MatrixInit(M_dense1,nd_2,nd_1);
+    MatrixInit(biais3, nd_2, 1);
 
+    MatrixInit(M_dense2,nd_3,nd_2);
+    MatrixInit(biais4, nd_3, 1);
 
+    MatrixInit(M_dense3,nd_4,nd_3);
+    MatrixInit(biais5, nd_4, 1);
 
-
-
-    //biais1[0]=0;
 
 //Copier la mémoire du CPU vers le GPU
     cudaMemcpy(raw_data_gpu,raw_data,sizeof(float)*nin*nin,cudaMemcpyHostToDevice);
-    cudaMemcpy(C1_data_gpu,C1_data,sizeof(float)*nout1*nout1*cout1,cudaMemcpyHostToDevice);
-    cudaMemcpy(S1_data_gpu,S1_data,sizeof(float)*nmaxpool*nmaxpool*cout1,cudaMemcpyHostToDevice);
+
     cudaMemcpy(C1_kernel_gpu,C1_kernel,sizeof(float)*nkernel*nkernel*cout1,cudaMemcpyHostToDevice);
-    cudaMemcpy(Mout_gpu,Mout,sizeof(float)*nout1*nout1*cout1,cudaMemcpyHostToDevice);
-    cudaMemcpy(Moutpool_gpu,Moutpool,sizeof(float)*nmaxpool*nmaxpool*cout1,cudaMemcpyHostToDevice);
     cudaMemcpy(biais1_gpu,biais1,sizeof(float)*cout1,cudaMemcpyHostToDevice);
+
+    cudaMemcpy(C2_kernel_gpu,C2_kernel,sizeof(float)*nkernel*nkernel*cout2*cout1,cudaMemcpyHostToDevice);
+    cudaMemcpy(biais2_gpu,biais2,sizeof(float)*cout2,cudaMemcpyHostToDevice);
+
+    cudaMemcpy(M_dense1_gpu,M_dense1,sizeof(float)*nd_2*nd_1,cudaMemcpyHostToDevice);
+    cudaMemcpy(biais3_gpu,biais3,sizeof(float)*nd_2,cudaMemcpyHostToDevice);
+
+    cudaMemcpy(M_dense2_gpu,M_dense2,sizeof(float)*nd_3*nd_2,cudaMemcpyHostToDevice);
+    cudaMemcpy(biais4_gpu,biais4,sizeof(float)*nd_3,cudaMemcpyHostToDevice);
+
+    cudaMemcpy(M_dense3_gpu,M_dense3,sizeof(float)*nd_4*nd_3,cudaMemcpyHostToDevice);
+    cudaMemcpy(biais5_gpu,biais5,sizeof(float)*nd_4,cudaMemcpyHostToDevice);
 
     //Conv2d<<<nout1,nout1>>>(raw_data_gpu, C1_kernel_gpu, Mout_gpu, nin, nkernel, 1, cout1, biais1_gpu); // Convolution
     Conv2d_multi_channel_in<<<nout1,nout1>>>(raw_data_gpu, C1_kernel_gpu, Mout_gpu, nin, nkernel, 1, cout1, biais1_gpu);
-    AveragePoolingGlobal<<<nmaxpool,nmaxpool>>>(Mout_gpu, Moutpool_gpu, nmaxpool,2 , cout1); // Maxpooling
+    AveragePoolingGlobal<<<nmaxpool,nmaxpool>>>(Mout_gpu, Moutpool_gpu, nmaxpool,2 , cout1); // MeanPooling
     
  
     cudaMemcpy(Mout,Mout_gpu,sizeof(float)*nout1*nout1*cout1,cudaMemcpyDeviceToHost); // Envoi de la matrice vers le cpu 
