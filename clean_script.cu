@@ -8,12 +8,16 @@ int main(){
     srand( time(NULL) );
 
 
-    int nin = 2; // dimensions matrice d'entrée
-    int nout1 = 2; // dimensions matrice de sortie de la première couche convolutive
+    int nin = 32; // dimensions matrice d'entrée
+    int nout1 = 28; // dimensions matrice de sortie de la première couche convolutive
     int cout1 = 6; // Nombre de canaux de sortie de la première couche convolutive
-    int cout2 = 16; // Nombre de canaux de sortie de la première couche convolutive
-    int nmaxpool = 1; // Dimensions de la matrice après max pooling
-    int nkernel = 1; //Dimensions du noyau de convolution de la première couche convolutive
+    
+    int nmaxpool = 14; // Dimensions de la matrice après mean pooling
+
+    int nout2 = 10 // dimensions matrice de sortie de la second couche convolutive
+    int cout2 = 16; // Nombre de canaux de sortie de la seconde couche convolutive
+    int nmeanpool2 = 5; // Dimensions de la matrice après second mean pooling
+    int nkernel = 5; //Dimensions du noyau de convolution de la première couche convolutive
     int nd_1 = 400; // Dimension du vecteur de la matrice de sortie applatie
     int nd_2 = 120; // Dimension de la première couche linéaire
     int nd_3 = 84; // Dimension de la deuxième couche linéaire
