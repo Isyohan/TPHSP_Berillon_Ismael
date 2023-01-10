@@ -32,3 +32,7 @@ GPU : 8.227s
 accélération pratique -> 21
 
 On pourrait s'attendre à mieux, il y a plusieurs améliorations possible dans notre code.
+
+TP4 :
+
+Tous les calculs d'une couche à l'autre sont parallélisables. En particulier les couches linéaires sont parallélisables facilement car c'est une mutliplication de matrice.
