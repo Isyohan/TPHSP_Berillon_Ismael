@@ -141,9 +141,14 @@ int main(){
     cudaMemcpy(V_out3,V_out3_gpu,sizeof(float)*nd_4,cudaMemcpyDeviceToHost); 
 
     cudaMemcpy(Moutpool,Moutpool_gpu,sizeof(float)*nmaxpool*nmaxpool*cout1,cudaMemcpyDeviceToHost); 
-    cudaMemcpy(Mout2,Mout2_gpu,sizeof(float)*nout2*nout2*cout2,cudaMemcpyDeviceToHost); 
+    cudaMemcpy(Mout2,Mout2_gpu,sizeof(float)*nout2*nout2*cout2,cudaMemcpyDeviceToHost);
+    
 
+    printf("test: Mout2\n");
     MatrixPrintChannel(Mout2,nout2,nout2,cout2);
+
+    printf("test: Vout\n");
+    MatrixPrint(V_out3,nd_4,1);
 
 /*
     printf("data : \n");
