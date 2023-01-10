@@ -125,7 +125,7 @@ __device__ float activation_tanh(float M){
 __device__ void softmax(float* V, float* S, int n_in){
     float sum = 0;
     for(int i = 0; i<n_in; i++){
-        sum += V[i]
+        sum += V[i];
     }
     for(int i = 0; i<n_in; i++){
         S[i] = V[i]/sum;

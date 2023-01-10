@@ -16,7 +16,7 @@ int main(){
     
     int nmaxpool = 14; // Dimensions de la matrice après mean pooling
 
-    int nout2 = 10 // dimensions matrice de sortie de la second couche convolutive
+    int nout2 = 10; // dimensions matrice de sortie de la second couche convolutive
     int cout2 = 16; // Nombre de canaux de sortie de la seconde couche convolutive
 
     int nmeanpool2 = 5; // Dimensions de la matrice après second mean pooling
@@ -68,8 +68,8 @@ int main(){
     float* Mout_gpu; (float*) cudaMalloc((void **) &Mout_gpu, sizeof(float)*nout1*nout1*cout1);
     float* Moutpool_gpu; (float*) cudaMalloc((void **) &Moutpool_gpu, sizeof(float)*nmaxpool*nmaxpool*cout1);
 
-    float* C2_kernel_gpu; (float*) cudaMalloc((void **) &C2_kernel_gpu, sizeof(float)*nkernel*nkernel*cout1*cout2)
-    float* biais2_gpu; (float*) cudaMalloc((void **) &biais1_gpu, sizeof(float)*cout2);
+    float* C2_kernel_gpu; (float*) cudaMalloc((void **) &C2_kernel_gpu, sizeof(float)*nkernel*nkernel*cout1*cout2);
+    float* biais2_gpu; (float*) cudaMalloc((void **) &biais2_gpu, sizeof(float)*cout2);
 
     float* Mout2_gpu; (float*) cudaMalloc((void **) &Mout2_gpu, sizeof(float)*nout2*nout2*cout2);
     float* Moutpool2_gpu; (float*) cudaMalloc((void **) &Moutpool2_gpu, sizeof(float)*nmeanpool2*nmeanpool2*cout2);
@@ -77,7 +77,7 @@ int main(){
 
     float* M_dense1_gpu; (float*) cudaMalloc((void **) &M_dense1_gpu, sizeof(float)*nd_2*nd_1);
     float* V_out1_gpu; (float*) cudaMalloc((void **) &V_out1_gpu, sizeof(float)*nd_2);
-    float* biais3_gpu; (float*) cudaMalloc((void **) &biais3_gpu, sizeof(float)*nd_2);)
+    float* biais3_gpu; (float*) cudaMalloc((void **) &biais3_gpu, sizeof(float)*nd_2);
 
     float* M_dense2_gpu; (float*) cudaMalloc((void **) &M_dense2_gpu, sizeof(float)*nd_3*nd_2);
     float* V_out2_gpu; (float*) cudaMalloc((void **) &V_out2_gpu, sizeof(float)*nd_3);
@@ -127,12 +127,25 @@ int main(){
     //Conv2d<<<nout1,nout1>>>(raw_data_gpu, C1_kernel_gpu, Mout_gpu, nin, nkernel, 1, cout1, biais1_gpu); // Convolution
     Conv2d_multi_channel_in<<<nout1,nout1>>>(raw_data_gpu, C1_kernel_gpu, Mout_gpu, nin, nkernel, 1, cout1, biais1_gpu);
     AveragePoolingGlobal<<<nmaxpool,nmaxpool>>>(Mout_gpu, Moutpool_gpu, nmaxpool,2 , cout1); // MeanPooling
+
+    Conv2d_multi_channel_in<<<nout2,nout2>>>(Moutpool_gpu, C2_kernel_gpu, Mout2_gpu, nmaxpool, nkernel, cout1, cout2, biais2_gpu);
+    AveragePoolingGlobal<<<nmeanpool2,nmeanpool2>>>(Mout2_gpu, Moutpool2_gpu, nmeanpool2,2 , cout2);
     
+    Dense<<<1,nd_2>>>(Moutpool2_gpu, V_out1_gpu, M_dense1_gpu, biais3_gpu, nd_1, nd_2);
+    Dense<<<1,nd_3>>>(V_out1_gpu, V_out2_gpu, M_dense2_gpu, biais4_gpu, nd_2, nd_3);
+    DenseSoftMax<<<1,nd_4>>>(V_out2_gpu, V_out3_gpu, M_dense3_gpu, biais5_gpu, nd_3, nd_4);
  
     cudaMemcpy(Mout,Mout_gpu,sizeof(float)*nout1*nout1*cout1,cudaMemcpyDeviceToHost); // Envoi de la matrice vers le cpu 
-    cudaMemcpy(Moutpool,Moutpool_gpu,sizeof(float)*nmaxpool*nmaxpool*cout1,cudaMemcpyDeviceToHost);    
+    cudaMemcpy(Moutpool,Moutpool_gpu,sizeof(float)*nmaxpool*nmaxpool*cout1,cudaMemcpyDeviceToHost); 
+    
+    cudaMemcpy(V_out3,V_out3_gpu,sizeof(float)*nd_4,cudaMemcpyDeviceToHost); 
 
+    cudaMemcpy(Moutpool,Moutpool_gpu,sizeof(float)*nmaxpool*nmaxpool*cout1,cudaMemcpyDeviceToHost); 
+    cudaMemcpy(Mout2,Mout2_gpu,sizeof(float)*nout2*nout2*cout2,cudaMemcpyDeviceToHost); 
 
+    MatrixPrintChannel(Mout2,nout2,nout2,cout2);
+
+/*
     printf("data : \n");
     MatrixPrint(raw_data,nin,nin);
     printf("\n");
@@ -151,6 +164,8 @@ int main(){
 
     printf("Maxpooled : \n");
     MatrixPrintChannel(Moutpool, nmaxpool,nmaxpool,cout1); // Affichage du résultat après max pooling
+
+*/
 
 /*
     int n_in = 2;
