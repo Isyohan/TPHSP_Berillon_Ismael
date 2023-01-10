@@ -1,6 +1,6 @@
-Hardware for Signal Prossesing TP 
-
 Théo BERILLON & Yohan ISMAEL
+
+Hardware for Signal Prossesing TP 
 ==============================
 
 ## TP1 :
