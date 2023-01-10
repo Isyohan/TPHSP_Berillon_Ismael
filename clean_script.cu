@@ -17,11 +17,13 @@ int main(){
     int nout2 = 10 // dimensions matrice de sortie de la second couche convolutive
     int cout2 = 16; // Nombre de canaux de sortie de la seconde couche convolutive
     int nmeanpool2 = 5; // Dimensions de la matrice après second mean pooling
-    int nkernel = 5; //Dimensions du noyau de convolution de la première couche convolutive
-    int nd_1 = 400; // Dimension du vecteur de la matrice de sortie applatie
-    int nd_2 = 120; // Dimension de la première couche linéaire
-    int nd_3 = 84; // Dimension de la deuxième couche linéaire
-    int nd_4 = 10; // Dimension de la troisième couche linéaire
+
+    int nkernel = 5; //Dimensions du noyau de convolution de la première & seconde couche convolutive
+
+    int nd_1 = 400; // Dimension du vecteur de la matrice de sortie applatie = 5*5*16
+    int nd_2 = 120; // Dimension de sortie de la première couche linéaire
+    int nd_3 = 84; // Dimension de sortie de la deuxième couche linéaire
+    int nd_4 = 10; // Dimension de sortie de la troisième couche linéaire
 
 // Allocation de la mémoire
     float* raw_data = (float*) malloc(sizeof(float)*nin*nin);
