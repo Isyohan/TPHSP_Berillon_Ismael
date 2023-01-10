@@ -41,5 +41,5 @@ Tous les calculs d'une couche à l'autre sont parallélisables. En particulier l
 
 Réseau final : 32x32x1 --Conv--> 28x28x6 --MeanPooling--> 14x14x6 --Conv--> 10x10x16 --MeanPooling--> 5x5x16 --Flatten--> 400 --Dense(tanh)--> 120 --Dense(tanh)--> 84 --Dense(softmax)--> 10 (nombre de labels de MNIST)
 
-Il ne reste plus qu'à importer les poids calculer dans le notebook.
+Il ne reste plus qu'à importer les poids calculés dans le notebook et le dataset MNIST pour les tests.
 
