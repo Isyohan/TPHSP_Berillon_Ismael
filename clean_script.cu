@@ -58,7 +58,8 @@ int main(){
     cudaMemcpy(Moutpool_gpu,Moutpool,sizeof(float)*nmaxpool*nmaxpool*cout1,cudaMemcpyHostToDevice);
     cudaMemcpy(biais1_gpu,biais1,sizeof(float)*cout1,cudaMemcpyHostToDevice);
 
-    Conv2d<<<nout1,nout1>>>(raw_data_gpu, C1_kernel_gpu, Mout_gpu, nin, nkernel, 1, cout1, biais1_gpu); // Convolution
+    //Conv2d<<<nout1,nout1>>>(raw_data_gpu, C1_kernel_gpu, Mout_gpu, nin, nkernel, 1, cout1, biais1_gpu); // Convolution
+    Conv2d_multi_channel_in<<<nout1,nout1>>>(raw_data_gpu, C1_kernel_gpu, Mout_gpu, nin, nkernel, 1, cout1, biais1_gpu);
     AveragePoolingGlobal<<<nmaxpool,nmaxpool>>>(Mout_gpu, Moutpool_gpu, nmaxpool,2 , cout1); // Maxpooling
     
  

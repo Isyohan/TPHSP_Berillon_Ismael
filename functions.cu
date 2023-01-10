@@ -140,7 +140,7 @@ __global__ void Conv2d(float* Min ,float* kernels ,float* Mout ,int nin ,int nke
     }
 }
 
-__global__ void Conv2d6dans16(float* Min ,float* kernels ,float* Mout ,int nin ,int nkernel ,int channel_in ,int channel_kernel, float* biais){ // Convolution de 6 dans 16
+__global__ void Conv2d_multi_channel_in(float* Min ,float* kernels ,float* Mout ,int nin ,int nkernel ,int channel_in ,int channel_out, float* biais){ // Convolution de 6 dans 16
     int nout=nin-nkernel+1;
     float* subM = (float*) malloc(sizeof(float)*nkernel*nkernel);
     float* oneChannelKernel = (float*) malloc(sizeof(float)*nkernel*nkernel);
@@ -150,10 +150,15 @@ __global__ void Conv2d6dans16(float* Min ,float* kernels ,float* Mout ,int nin ,
 
 
     SubMatrixDevice(Min,subM,nin,nkernel,channel_in,i,j);
-    for (int ch=0 ; ch<channel_kernel ; ch++){
-        ChooseChannel(kernels,oneChannelKernel,nkernel,ch);
+    for (int ch=0 ; ch<channel_out ; ch++){
+        
         Mout[i*nout + j + ch*nout*nout]=biais[ch];
-        Mout[i*nout + j + ch*nout*nout]+=activation_tanh(MatrixMulTermToTerm(subM,oneChannelKernel,nkernel));
+        for(int chi = 0; chi<channel_in; chi++){
+            ChooseChannel(kernels,oneChannelKernel,nkernel,ch*channel_in+chi);
+            Mout[i*nout + j + ch*nout*nout]+=MatrixMulTermToTerm(subM,oneChannelKernel,nkernel);
+            
+        }
+        Mout[i*nout + j + ch*nout*nout]=activation_tanh(Mout[i*nout + j + ch*nout*nout]);
     }
 }
 
