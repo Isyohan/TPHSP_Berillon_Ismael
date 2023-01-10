@@ -151,7 +151,8 @@ __global__ void Conv2d(float* Min ,float* kernels ,float* Mout ,int nin ,int nke
 
 __global__ void Conv2d_multi_channel_in(float* Min ,float* kernels ,float* Mout ,int nin ,int nkernel ,int channel_in ,int channel_out, float* biais){ // Convolution de 6 dans 16
     int nout=nin-nkernel+1;
-    float* subM = (float*) malloc(sizeof(float)*nkernel*nkernel);
+    float* subM = (float*) malloc(sizeof(float)*nkernel*nkernel*channel_in);
+    float* oneChannelIn= (float*) malloc(sizeof(float)*nkernel*nkernel);
     float* oneChannelKernel = (float*) malloc(sizeof(float)*nkernel*nkernel);
 
     int j = blockIdx.x;
@@ -164,6 +165,7 @@ __global__ void Conv2d_multi_channel_in(float* Min ,float* kernels ,float* Mout 
         Mout[i*nout + j + ch*nout*nout]=biais[ch];
         for(int chi = 0; chi<channel_in; chi++){
             ChooseChannel(kernels,oneChannelKernel,nkernel,ch*channel_in+chi);
+            ChooseChannel(subM,oneChannelIn,nkernel,ch*channel_in+chi);
             Mout[i*nout + j + ch*nout*nout]+=MatrixMulTermToTerm(subM,oneChannelKernel,nkernel);
             
         }
