@@ -38,3 +38,6 @@ TP4 :
 Tous les calculs d'une couche à l'autre sont parallélisables. En particulier les couches linéaires sont parallélisables facilement car c'est une mutliplication de matrice.
 
 Réseau final : 32x32x1 --Conv--> 28x28x6 --MeanPooling--> 14x14x6 --Conv--> 10x10x16 --MeanPooling--> 5x5x16 --Flatten--> 400 --Dense(tanh)--> 120 --Dense(tanh)--> 84 --Dense(softmax)--> 10
+|
+|
+v
