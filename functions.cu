@@ -122,6 +122,15 @@ __device__ float activation_tanh(float M){
     return tan_h;
 }
 
+__device__ void softmax(float* V, float* S, int n_in){
+    float sum = 0;
+    for(int i = 0; i<n_in; i++){
+        sum += V[i]
+    }
+    for(int i = 0; i<n_in; i++){
+        S[i] = V[i]/sum;
+    }
+} 
 
 __global__ void Conv2d(float* Min ,float* kernels ,float* Mout ,int nin ,int nkernel ,int channel_in ,int channel_kernel, float* biais){
     int nout=nin-nkernel+1;
@@ -276,5 +285,18 @@ __global__ void Dense(float* V_in, float* V_out, float* M_poids, float* biais, i
         V_out[i] += M_poids[i*n_in+j]*V_in[j];
     }
     V_out[i] = activation_tanh(V_out[i]);
+    
+}
+
+__global__ void DenseSoftMax(float* V_in, float* V_out, float* M_poids, float* biais, int n_in, int n_out){
+
+    int i = blockIdx.x;
+
+    
+    V_out[i] = biais[i];
+    for(int j = 0; j<n_in;j++){
+        V_out[i] += M_poids[i*n_in+j]*V_in[j];
+    }
+    softmax(V_out,V_out,n_out);
     
 }

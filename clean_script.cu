@@ -10,9 +10,14 @@ int main(){
 
     int nin = 2; // dimensions matrice d'entrée
     int nout1 = 2; // dimensions matrice de sortie de la première couche convolutive
-    int cout1 = 2; // Nombre de canaux de sortie de la première couche convolutive
+    int cout1 = 6; // Nombre de canaux de sortie de la première couche convolutive
+    int cout2 = 16; // Nombre de canaux de sortie de la première couche convolutive
     int nmaxpool = 1; // Dimensions de la matrice après max pooling
     int nkernel = 1; //Dimensions du noyau de convolution de la première couche convolutive
+    int nd_1 = 400; // Dimension du vecteur de la matrice de sortie applatie
+    int nd_2 = 120; // Dimension de la première couche linéaire
+    int nd_3 = 84; // Dimension de la deuxième couche linéaire
+    int nd_4 = 10; // Dimension de la troisième couche linéaire
 
 // Allocation de la mémoire
     float* raw_data = (float*) malloc(sizeof(float)*nin*nin);
@@ -22,6 +27,10 @@ int main(){
     float* Mout = (float*) malloc(sizeof(float)*nout1*nout1*cout1);
     float* Moutpool = (float*) malloc(sizeof(float)*nmaxpool*nmaxpool*cout1);
     float* biais1 = (float*) malloc(sizeof(float)*cout1);
+    float* biais2 = (float*) malloc(sizeof(float)*cout2);
+    float* biais3 = (float*) malloc(sizeof(float)*nd_2);
+    float* biais4 = (float*) malloc(sizeof(float)*nd_3);
+    float* biais5 = (float*) malloc(sizeof(float)*nd_4);
 
 // Initialisation de la mémoire dans le gpu
     float* raw_data_gpu;
@@ -31,6 +40,10 @@ int main(){
     float* Mout_gpu;
     float* Moutpool_gpu;
     float* biais1_gpu;
+    float* biais2_gpu;
+    float* biais3_gpu;
+    float* biais4_gpu;
+    float* biais5_gpu;
     (float*) cudaMalloc((void **) &raw_data_gpu, sizeof(float)*nin*nin);
     (float*) cudaMalloc((void **) &C1_data_gpu, sizeof(float)*nout1*nout1*cout1);
     (float*) cudaMalloc((void **) &S1_data_gpu, sizeof(float)*nmaxpool*nmaxpool*cout1);
@@ -38,6 +51,10 @@ int main(){
     (float*) cudaMalloc((void **) &Mout_gpu, sizeof(float)*nout1*nout1*cout1);
     (float*) cudaMalloc((void **) &Moutpool_gpu, sizeof(float)*nmaxpool*nmaxpool*cout1);
     (float*) cudaMalloc((void **) &biais1_gpu, sizeof(float)*cout1);
+    (float*) cudaMalloc((void **) &biais2_gpu, sizeof(float)*cout2);
+    (float*) cudaMalloc((void **) &biais3_gpu, sizeof(float)*nd_2);
+    (float*) cudaMalloc((void **) &biais4_gpu, sizeof(float)*nd_3);
+    (float*) cudaMalloc((void **) &biais5_gpu, sizeof(float)*nd_4);
 
 //Initialisation des matrices
     MatrixInit(raw_data, nin, nin);
